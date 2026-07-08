@@ -1,0 +1,122 @@
+media:
+  - name: images
+    label: 图片
+    input: docs/public/images
+    output: /images
+    categories: [image]
+    rename: safe
+
+content:
+  - name: blog
+    label: 博客
+    type: group
+    items:
+      - name: posts
+        label: 文章
+        type: collection
+        path: docs/posts
+        format: yaml-frontmatter
+        operations:
+          create: true
+          rename: true
+          delete: true
+        exclude:
+          - index.md
+        filename:
+          template: "{year}-{month}-{day}-{title}.md"
+          field: create
+        view:
+          fields: [title, date, category, draft]
+          primary: title
+          sort: [date, title]
+          search: [title, description, category, tags]
+          default:
+            sort: date
+            order: desc
+        fields:
+          - name: title
+            label: 标题
+            type: string
+            required: true
+          - name: description
+            label: 摘要
+            type: text
+            required: true
+            options:
+              maxlength: 180
+          - name: date
+            label: 发布日期
+            type: date
+            required: true
+            options:
+              format: yyyy-MM-dd
+          - name: category
+            label: 分类
+            type: string
+            required: true
+          - name: tags
+            label: 标签
+            type: string
+            list: true
+          - name: cover
+            label: 封面图
+            type: image
+            options:
+              media: images
+              path: posts
+              categories: [image]
+              extensions: [jpg, jpeg, png, webp, avif]
+              rename: safe
+          - name: draft
+            label: 草稿
+            type: boolean
+            default: false
+          - name: body
+            label: 正文
+            type: rich-text
+            required: true
+            options:
+              format: markdown
+              media: images
+              path: posts
+              categories: [image]
+              extensions: [jpg, jpeg, png, webp, avif]
+              rename: safe
+              switcher: true
+
+  - name: pages
+    label: 页面
+    type: group
+    items:
+      - name: about
+        label: 关于
+        type: file
+        path: docs/about.md
+        format: yaml-frontmatter
+        operations:
+          rename: false
+          delete: false
+        fields:
+          - name: title
+            label: 标题
+            type: string
+            default: 关于
+          - name: body
+            label: 内容
+            type: rich-text
+            options:
+              format: markdown
+              media: images
+              path: pages
+              switcher: true
+
+settings:
+  content:
+    merge: true
+  commit:
+    identity: app
+    templates:
+      create: "content(create): {path}"
+      update: "content(update): {path}"
+      delete: "content(delete): {path}"
+      rename: "content(rename): {oldPath} -> {newPath}"

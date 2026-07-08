@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="个人博客">
+  <rect width="1200" height="630" fill="#ffffff"/>
+  <rect x="72" y="72" width="1056" height="486" rx="24" fill="#f6f8fa" stroke="#d8dee4"/>
+  <text x="120" y="230" fill="#0969da" font-family="Arial, sans-serif" font-size="34" font-weight="700">Personal Blog</text>
+  <text x="120" y="326" fill="#1f2328" font-family="Arial, sans-serif" font-size="72" font-weight="700">个人博客</text>
+  <text x="120" y="402" fill="#59636e" font-family="Arial, sans-serif" font-size="34">技术笔记、项目经验与长期思考</text>
+  <rect x="120" y="456" width="160" height="10" rx="5" fill="#0969da"/>
+  <rect x="300" y="456" width="88" height="10" rx="5" fill="#3fb950"/>
+</svg>
