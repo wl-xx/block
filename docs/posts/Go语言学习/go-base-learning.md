@@ -740,8 +740,9 @@ go vet ./...
 
 ## 16. JavaScript / TypeScript 对照表
 
+
 | JS / TS | Go | 注意 |
-|---|---|---|
+| ---------------------- | ------------------------------ | ----------------- |
 | `let x = 1` | `x := 1` | 仅函数内部 |
 | `const x = 1` | `const x = 1` | Go 常量需编译期可确定 |
 | `number` | `int`、`float64` 等 | 类型更细 |
@@ -764,6 +765,7 @@ go vet ./...
 | `JSON.parse` | `json.Unmarshal` | 需要目标地址 |
 | `Promise.all` | Goroutine + WaitGroup 等 | 并非完全等价 |
 
+
 ## 17. 七天学习路线与练习
 
 - **第 1 天：** 环境、变量、类型、运算符、if、for、switch。练习：命令行计算器。
@@ -776,15 +778,15 @@ go vet ./...
 
 ### 进阶实践清单
 
-- [ ] Slice 按 ID 查找、插入、更新和删除结构体
-- [ ] Map 按键查找、判断存在、更新、删除
-- [ ] 用 `(value, error)` 设计函数返回值
-- [ ] 用指针接收者更新 Struct
-- [ ] JSON 与 Struct 双向转换
-- [ ] 使用 Gin 编写 5 个 REST API
-- [ ] 使用 `go test` 为服务编写测试
-- [ ] 使用 `go test -race` 检测并发问题
-- [ ] 接入数据库并处理唯一约束、事务与分页
+- Slice 按 ID 查找、插入、更新和删除结构体
+- Map 按键查找、判断存在、更新、删除
+- 用 `(value, error)` 设计函数返回值
+- 用指针接收者更新 Struct
+- JSON 与 Struct 双向转换
+- 使用 Gin 编写 5 个 REST API
+- 使用 `go test` 为服务编写测试
+- 使用 `go test -race` 检测并发问题
+- 接入数据库并处理唯一约束、事务与分页
 
 ### 官方参考资料
 
