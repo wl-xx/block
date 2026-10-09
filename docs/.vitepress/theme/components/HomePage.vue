@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { withBase } from 'vitepress'
 import { data as posts } from '../../../posts.data'
+import PostBreadcrumb from './PostBreadcrumb.vue'
 
 const latestPosts = computed(() => posts.slice(0, 6))
 
@@ -31,6 +32,18 @@ const readingMinutes = computed(() => {
   return posts.reduce((total, post) => total + post.readingTime, 0)
 })
 
+const folderCount = computed(() => {
+  const paths = new Set<string>()
+
+  for (const post of posts) {
+    post.folders.forEach((_folder, index) => {
+      paths.add(post.folders.slice(0, index + 1).join('/'))
+    })
+  }
+
+  return paths.size
+})
+
 function formatDate(value: string) {
   return new Intl.DateTimeFormat('zh-CN', {
     year: 'numeric',
@@ -58,8 +71,8 @@ function formatDate(value: string) {
           <dd>文章</dd>
         </div>
         <div>
-          <dt>{{ categories.length }}</dt>
-          <dd>分类</dd>
+          <dt>{{ folderCount }}</dt>
+          <dd>文件夹</dd>
         </div>
         <div>
           <dt>{{ readingMinutes }}</dt>
@@ -81,6 +94,7 @@ function formatDate(value: string) {
             <h3>{{ post.title }}</h3>
             <p>{{ post.description }}</p>
             <div class="post-footer">
+              <PostBreadcrumb :folders="post.folders" />
               <span>{{ post.category }}</span>
               <span v-if="post.tags.length">{{ post.tags.slice(0, 2).join(' / ') }}</span>
             </div>

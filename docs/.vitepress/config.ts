@@ -4,11 +4,14 @@ import mathjax3 from 'markdown-it-mathjax3'
 import { Feed } from 'feed'
 import matter from 'gray-matter'
 import { readdir, readFile, writeFile } from 'node:fs/promises'
+import { readdirSync, readFileSync } from 'node:fs'
 import { join, relative } from 'node:path'
 
 const base = normalizeBase(process.env.VITEPRESS_BASE)
 const siteUrl = normalizeUrl(process.env.VITEPRESS_SITE_URL ?? 'https://wl-xx.github.io/block')
 const defaultOgImage = `${siteUrl}/og.svg`
+const postsRoot = join(process.cwd(), 'docs', 'posts')
+const postsSidebar = createPostsSidebar(postsRoot, postsRoot)
 
 export default withMermaid(
   defineConfig({
@@ -28,6 +31,9 @@ export default withMermaid(
 
     markdown: {
       lineNumbers: true,
+      headers: {
+        level: [2, 3]
+      },
       image: {
         lazyLoading: true
       },
@@ -56,8 +62,8 @@ export default withMermaid(
       sidebar: {
         '/posts/': [
           {
-            text: '文章',
-            items: [{ text: '文章列表', link: '/posts/' }]
+            text: '文章目录',
+            items: postsSidebar
           }
         ]
       },
@@ -117,7 +123,7 @@ export default withMermaid(
         '一个使用 VitePress、Pages CMS 和 GitHub Pages 构建的纯静态个人博客。'
       const cover = pageData.frontmatter.cover
       const image = typeof cover === 'string' ? getAssetUrl(cover) : defaultOgImage
-      const isArticle = pageData.relativePath.startsWith('posts/') && pageData.relativePath !== 'posts/index.md'
+      const isArticle = pageData.relativePath.startsWith('posts/') && !pageData.relativePath.endsWith('/index.md')
       const tags = Array.isArray(pageData.frontmatter.tags) ? pageData.frontmatter.tags : []
 
       return [
@@ -169,6 +175,34 @@ function getPageUrl(relativePath: string) {
 function getAssetUrl(value: string) {
   if (/^https?:\/\//.test(value)) return value
   return `${siteUrl}/${value.replace(/^\//, '')}`
+}
+
+function createPostsSidebar(directory: string, root: string): Array<Record<string, unknown>> {
+  const entries = readdirSync(directory, { withFileTypes: true })
+  const folders = entries
+    .filter((entry) => entry.isDirectory() && entry.name !== '[folder]')
+    .sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'))
+    .map((entry) => {
+      const fullPath = join(directory, entry.name)
+      return {
+        text: `📁 ${entry.name}`,
+        collapsed: true,
+        items: createPostsSidebar(fullPath, root)
+      }
+    })
+  const articles = entries
+    .filter((entry) => entry.isFile() && entry.name.endsWith('.md') && entry.name !== 'index.md')
+    .sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'))
+    .flatMap((entry) => {
+      const fullPath = join(directory, entry.name)
+      const parsed = matter(readFileSync(fullPath, 'utf-8'))
+      if (parsed.data.draft) return []
+
+      const slug = relative(root, fullPath).replace(/\\/g, '/').replace(/\.md$/, '')
+      return [{ text: parsed.data.title ?? entry.name.replace(/\.md$/, ''), link: `/posts/${slug}` }]
+    })
+
+  return [...folders, ...articles]
 }
 
 async function generateFeed(srcDir: string, outDir: string) {

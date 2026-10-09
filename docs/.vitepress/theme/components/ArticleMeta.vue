@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute } from 'vitepress'
+import { useData } from 'vitepress'
 import { data as posts } from '../../../posts.data'
+import PostBreadcrumb from './PostBreadcrumb.vue'
+import { getPostUrl } from '../utils/postRoutes'
 
-const route = useRoute()
+const { page } = useData()
 
 const post = computed(() => {
-  const path = route.path.replace(/\.html$/, '')
-  return posts.find((item) => item.url === path)
+  return posts.find((item) => item.url === getPostUrl(page.value.relativePath))
 })
 
 const isPost = computed(() => Boolean(post.value))
@@ -23,41 +24,35 @@ function formatDate(value: string) {
 
 <template>
   <div v-if="isPost && post" class="article-meta">
+    <PostBreadcrumb :folders="post.folders" link-folders current-folder-link />
     <div class="meta-line">
       <span>{{ formatDate(post.date) }}</span>
       <span>{{ post.readingTime }} 分钟阅读</span>
       <span>{{ post.category }}</span>
     </div>
-    <p v-if="post.description" class="description">{{ post.description }}</p>
   </div>
 </template>
 
 <style scoped>
 .article-meta {
-  margin-bottom: 28px;
-  padding-bottom: 24px;
+  margin-bottom: 26px;
+  padding-bottom: 18px;
   border-bottom: 1px solid var(--vp-c-divider);
 }
 
 .meta-line {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
+  margin-top: 10px;
   color: var(--vp-c-text-3);
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .meta-line span:not(:last-child)::after {
   content: "/";
-  margin-left: 10px;
+  margin-left: 8px;
   color: var(--vp-c-divider);
 }
 
-.description {
-  max-width: 680px;
-  margin: 14px 0 0;
-  color: var(--vp-c-text-2);
-  font-size: 16px;
-  line-height: 1.8;
-}
 </style>

@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute, withBase } from 'vitepress'
+import { useData, withBase } from 'vitepress'
 import { data as posts } from '../../../posts.data'
 import GiscusComments from './GiscusComments.vue'
+import { getPostUrl } from '../utils/postRoutes'
 
-const route = useRoute()
+const { page } = useData()
 
 const currentIndex = computed(() => {
-  const path = route.path.replace(/\.html$/, '')
-  return posts.findIndex((item) => item.url === path)
+  return posts.findIndex((item) => item.url === getPostUrl(page.value.relativePath))
 })
 
 const current = computed(() => posts[currentIndex.value])

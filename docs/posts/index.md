@@ -1,8 +1,7 @@
 ---
 title: 全部文章
-layout: page
-sidebar: false
-outline: false
+layout: doc
+aside: false
 ---
 
 <PostsPage />

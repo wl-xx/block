@@ -6,24 +6,26 @@ export interface Post {
   date: string
   category: string
   tags: string[]
+  folders: string[]
   cover?: string
   url: string
   excerpt?: string
   readingTime: number
 }
 
-export default createContentLoader('posts/*.md', {
+export default createContentLoader('posts/**/*.md', {
   includeSrc: true,
   excerpt: true,
   transform(raw): Post[] {
     return raw
-      .filter((item) => item.url !== '/posts/' && !item.frontmatter.draft)
+      .filter((item) => !item.url.endsWith('/') && !item.frontmatter.draft)
       .map((item) => ({
         title: item.frontmatter.title ?? '未命名文章',
         description: item.frontmatter.description ?? '',
         date: normalizeDate(item.frontmatter.date),
         category: item.frontmatter.category ?? '随笔',
         tags: Array.isArray(item.frontmatter.tags) ? item.frontmatter.tags : [],
+        folders: getFolders(item.url),
         cover: item.frontmatter.cover,
         url: item.url,
         excerpt: item.excerpt,
@@ -32,6 +34,15 @@ export default createContentLoader('posts/*.md', {
       .sort((a, b) => b.date.localeCompare(a.date))
   }
 })
+
+function getFolders(url: string) {
+  const segments = url.split('/').filter(Boolean)
+  const postIndex = segments.indexOf('posts')
+
+  if (postIndex < 0) return []
+
+  return segments.slice(postIndex + 1, -1).map((segment) => decodeURIComponent(segment))
+}
 
 function normalizeDate(value: unknown) {
   if (value instanceof Date) return value.toISOString().slice(0, 10)
